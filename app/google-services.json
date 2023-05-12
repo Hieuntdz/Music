@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "653516525416",
+    "project_id": "country-music-all-of-tim-bd3da",
+    "storage_bucket": "country-music-all-of-tim-bd3da.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:653516525416:android:dd2de9c86981f2129010dd",
+        "android_client_info": {
+          "package_name": "com.musicentertainment.countrymusic"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "653516525416-a9b3nov372ffi6l4qcthcn4p8lijh39a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.musicentertainment.countrymusic",
+            "certificate_hash": "32cd64813612cf9fe83b2199ca473b94102f7aeb"
+          }
+        },
+        {
+          "client_id": "653516525416-ob9dsf7anqj11s35du7rg2s1fcthl5t0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMj8JJrZlpCkszVaMKREvn7gaPEH6LAtQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "653516525416-ob9dsf7anqj11s35du7rg2s1fcthl5t0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
