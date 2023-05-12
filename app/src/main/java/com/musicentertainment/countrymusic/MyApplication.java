@@ -41,8 +41,8 @@ public class MyApplication extends Application {
                                 .build()))
                 .build());
 
-        OneSignal.startInit(getApplicationContext())
-                .inFocusDisplaying(OneSignal.OSInFocusDisplayOption.Notification).init();
+        OneSignal.initWithContext(this);
+        OneSignal.setAppId("93307a8f-02c2-444f-996c-9b51f509fb74");
 
         DBHelper dbHelper = new DBHelper(getApplicationContext());
         dbHelper.onCreate(dbHelper.getWritableDatabase());

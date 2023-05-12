@@ -1,8 +1,10 @@
 package com.musicentertainment.utils;
 
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,71 +13,41 @@ import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.IBinder;
+
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import com.musicentertainment.countrymusic.BuildConfig;
 import com.musicentertainment.countrymusic.R;
 import com.musicentertainment.countrymusic.SplashActivity;
+import com.onesignal.OSNotification;
+import com.onesignal.OSNotificationReceivedEvent;
+import com.onesignal.OneSignal;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
 import javax.net.ssl.HttpsURLConnection;
 
 
-public class NotificationExtenderExample extends NotificationExtenderService {
+public class NotificationExtenderExample implements OneSignal.OSRemoteNotificationReceivedHandler {
 
     public static final int NOTIFICATION_ID = 1;
     String title, message, bigpicture, sname, url;
 
-    @Override
-    protected boolean onNotificationProcessing(OSNotificationReceivedResult receivedResult) {
-
-        title = receivedResult.payload.title;
-        message = receivedResult.payload.body;
-        bigpicture = receivedResult.payload.bigPicture;
-
-        try {
-            Constant.pushCID = receivedResult.payload.additionalData.getString("cat_id");
-            Constant.pushCName = receivedResult.payload.additionalData.getString("cat_name");
-
-            if(receivedResult.payload.additionalData.has("artist_id")) {
-                Constant.pushArtID = receivedResult.payload.additionalData.getString("artist_id");
-                Constant.pushArtNAME = receivedResult.payload.additionalData.getString("artist_name");
-            }
-
-            if(receivedResult.payload.additionalData.has("album_id")) {
-                Constant.pushAlbID = receivedResult.payload.additionalData.getString("album_id");
-                Constant.pushAlbNAME = receivedResult.payload.additionalData.getString("album_name");
-            }
-
-            if(receivedResult.payload.additionalData.has("song_id")) {
-                Constant.pushSID = receivedResult.payload.additionalData.getString("song_id");
-                sname = receivedResult.payload.additionalData.getString("song_name");
-            }
-            url = receivedResult.payload.additionalData.getString("external_link");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        sendNotification();
-
-        return true;
-    }
-
-    private void sendNotification() {
-        NotificationManager mNotificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+    private void sendNotification(Context context) {
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         Intent intent;
         if (!Constant.pushSID.equals("0") || !Constant.pushCID.equals("0") || !Constant.pushArtID.equals("0") || !Constant.pushAlbID.equals("0")) {
-            intent = new Intent(this, SplashActivity.class);
+            intent = new Intent(context, SplashActivity.class);
             intent.putExtra("ispushnoti", true);
         } else if(!url.equals("false") && !url.trim().isEmpty()){
             intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse(url));
         } else {
-            intent = new Intent(this, SplashActivity.class);
+            intent = new Intent(context, SplashActivity.class);
         }
 
         NotificationChannel mChannel;
@@ -87,9 +59,9 @@ public class NotificationExtenderExample extends NotificationExtenderService {
             mNotificationManager.createNotificationChannel(mChannel);
         }
 
-        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
                 .setAutoCancel(true)
                 .setSound(uri)
                 .setAutoCancel(true)
@@ -147,5 +119,38 @@ public class NotificationExtenderExample extends NotificationExtenderService {
             // Log exception
             return null;
         }
+    }
+
+    @Override
+    public void remoteNotificationReceived(Context context, OSNotificationReceivedEvent receivedResult) {
+        OSNotification payload = receivedResult.getNotification();
+        title = payload.getTitle();
+        message = payload.getBody();
+        bigpicture = payload.getBigPicture();
+
+        try {
+            Constant.pushCID = payload.getAdditionalData().getString("cat_id");
+            Constant.pushCName = payload.getAdditionalData().getString("cat_name");
+
+            if(payload.getAdditionalData().has("artist_id")) {
+                Constant.pushArtID = payload.getAdditionalData().getString("artist_id");
+                Constant.pushArtNAME = payload.getAdditionalData().getString("artist_name");
+            }
+
+            if(payload.getAdditionalData().has("album_id")) {
+                Constant.pushAlbID = payload.getAdditionalData().getString("album_id");
+                Constant.pushAlbNAME = payload.getAdditionalData().getString("album_name");
+            }
+
+            if(payload.getAdditionalData().has("song_id")) {
+                Constant.pushSID = payload.getAdditionalData().getString("song_id");
+                sname = payload.getAdditionalData().getString("song_name");
+            }
+            url = payload.getAdditionalData().getString("external_link");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        sendNotification(context);
     }
 }
