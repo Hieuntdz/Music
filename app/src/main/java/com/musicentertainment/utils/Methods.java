@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentResolver;
@@ -41,6 +42,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.musicentertainment.adapter.AdapterPlaylistDialog;
 import com.musicentertainment.countrymusic.BuildConfig;
 import com.musicentertainment.countrymusic.DownloadService;
@@ -62,7 +67,6 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
@@ -91,6 +95,7 @@ import androidx.appcompat.widget.AppCompatButton;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -202,7 +207,7 @@ public class Methods {
     }
 
     public String milliSecondsToTimer(long milliseconds, long duration) {
-        if(duration > 0) {
+        if (duration > 0) {
             String finalTimerString = "";
             String hourString = "";
             String secondsString = "";
@@ -456,7 +461,6 @@ public class Methods {
 //                    linearLayout.addView(adView);
 
 
-
                     com.facebook.ads.AdView adView = new com.facebook.ads.AdView(context, Constant.ad_banner_id, com.facebook.ads.AdSize.BANNER_HEIGHT_50);
 
                     com.facebook.ads.AdListener adListener = new com.facebook.ads.AdListener() {
@@ -492,7 +496,7 @@ public class Methods {
             } else {
                 return null;
             }
-        }  catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -500,7 +504,7 @@ public class Methods {
 
     private AdSize getAdSize() {
         // Step 2 - Determine the screen width (less decorations) to use for the ad width.
-        Display display = ((Activity)context).getWindowManager().getDefaultDisplay();
+        Display display = ((Activity) context).getWindowManager().getDefaultDisplay();
         DisplayMetrics outMetrics = new DisplayMetrics();
         display.getMetrics(outMetrics);
 
@@ -510,8 +514,10 @@ public class Methods {
         int adWidth = (int) (widthPixels / density);
 
         // Step 3 - Get adaptive ad size and return for setting on the ad view.
-        return AdSize.getCurrentOrientationBannerAdSizeWithWidth(context, adWidth);
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(context, adWidth);
     }
+
+    private InterstitialAd mInterstitialAd;
 
     public void showInterAd(final int pos, final String type) {
         if (Constant.isInterAd) {
@@ -521,7 +527,6 @@ public class Methods {
                 isClicked = false;
                 if (Constant.interstitialAdType.equals("admob")) {
 
-                    final InterstitialAd interstitialAd = new InterstitialAd(context);
                     AdRequest adRequest;
                     if (ConsentInformation.getInstance(context).getConsentStatus() == ConsentStatus.PERSONALIZED) {
                         adRequest = new AdRequest.Builder()
@@ -533,33 +538,64 @@ public class Methods {
                                 .addNetworkExtrasBundle(AdMobAdapter.class, extras)
                                 .build();
                     }
-                    interstitialAd.setAdUnitId(Constant.ad_inter_id);
-                    interstitialAd.loadAd(adRequest);
-                    interstitialAd.setAdListener(new AdListener() {
-                        @Override
-                        public void onAdLoaded() {
-                            super.onAdLoaded();
-                            if (!isClicked) {
-                                isClicked = true;
-                                interstitialAd.show();
-                            }
-                        }
 
-                        public void onAdClosed() {
+
+                    InterstitialAd.load(context, Constant.ad_inter_id, adRequest,
+                            new InterstitialAdLoadCallback() {
+                                @Override
+                                public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                                    // The mInterstitialAd reference will be null until
+                                    // an ad is loaded.
+                                    mInterstitialAd = interstitialAd;
+                                    if (!isClicked) {
+                                        isClicked = true;
+                                        mInterstitialAd.show((Activity) context);
+                                    }
+                                }
+
+                                @Override
+                                public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                                    mInterstitialAd = null;
+                                    if (!isClicked) {
+                                        isClicked = true;
+                                        interAdListener.onClick(pos, type);
+                                    }
+                                }
+
+                            });
+
+                    mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                        @Override
+                        public void onAdDismissedFullScreenContent() {
+                            super.onAdDismissedFullScreenContent();
                             interAdListener.onClick(pos, type);
-                            super.onAdClosed();
                         }
-
-                        @Override
-                        public void onAdFailedToLoad(int i) {
-                            if (!isClicked) {
-                                isClicked = true;
-                                interAdListener.onClick(pos, type);
-                            }
-                            super.onAdFailedToLoad(i);
-                        }
-
                     });
+//                    interstitialAd.setAdListener(new AdListener() {
+//                        @Override
+//                        public void onAdLoaded() {
+//                            super.onAdLoaded();
+//                            if (!isClicked) {
+//                                isClicked = true;
+//                                interstitialAd.show();
+//                            }
+//                        }
+//
+//                        public void onAdClosed() {
+//                            interAdListener.onClick(pos, type);
+//                            super.onAdClosed();
+//                        }
+//
+//                        @Override
+//                        public void onAdFailedToLoad(int i) {
+//                            if (!isClicked) {
+//                                isClicked = true;
+//                                interAdListener.onClick(pos, type);
+//                            }
+//                            super.onAdFailedToLoad(i);
+//                        }
+//
+//                    });
 
                     new Handler().postDelayed(new Runnable() {
                         @Override
@@ -710,7 +746,7 @@ public class Methods {
     }
 
     public String getDarkMode() {
-        SharedPref sharedPref = new SharedPref(context);
+        SharedPref sharedPref = new SharedPref((Activity) context);
         return sharedPref.getDarkMode();
     }
 
@@ -838,6 +874,7 @@ public class Methods {
         dialog.show();
     }
 
+    @SuppressLint("Range")
     public void getListOfflineSongs() {
         long aa = System.currentTimeMillis();
         Constant.arrayListOfflineSongs.clear();
@@ -854,7 +891,7 @@ public class Methods {
                 String artist = songCursor.getString(songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
 
                 String url = "", image = "";
-                if(android.os.Build.VERSION.SDK_INT >= 29) {
+                if (android.os.Build.VERSION.SDK_INT >= 29) {
                     url = Uri.withAppendedPath(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id).toString();
                 } else {
                     url = songCursor.getString(songCursor.getColumnIndex(MediaStore.Audio.Media.DATA));
@@ -867,7 +904,7 @@ public class Methods {
 
                 String desc = context.getString(R.string.title) + " - " + title + "</br>" + context.getString(R.string.artist) + " - " + artist;
 
-                ItemSong itemSong = new ItemSong(id, "", "", artist, url, image, image, title, desc, "0", "0", "0", "0", "",false);
+                ItemSong itemSong = new ItemSong(id, "", "", artist, url, image, image, title, desc, "0", "0", "0", "0", "", false);
                 itemSong.setDuration(duration);
                 Constant.arrayListOfflineSongs.add(itemSong);
             } while (songCursor.moveToNext());
@@ -961,7 +998,7 @@ public class Methods {
     }
 
     public void changeAutoLogin(Boolean isAutoLogin) {
-        SharedPref sharePref = new SharedPref(context);
+        SharedPref sharePref = new SharedPref((Activity) context);
         sharePref.setIsAutoLogin(isAutoLogin);
     }
 
@@ -972,7 +1009,7 @@ public class Methods {
                 intent.setAction(PlayerService.ACTION_STOP);
                 context.startService(intent);
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -1113,17 +1150,17 @@ public class Methods {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String url = Constant.appUpdateURL;
-                if(url.equals("")) {
+                if (url.equals("")) {
                     url = "http://play.google.com/store/apps/details?id=" + context.getPackageName();
                 }
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(url));
                 context.startActivity(i);
 
-                ((Activity)context).finish();
+                ((Activity) context).finish();
             }
         });
-        if(Constant.appUpdateCancel) {
+        if (Constant.appUpdateCancel) {
             alertDialog.setNegativeButton(context.getString(R.string.cancel), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -1133,7 +1170,7 @@ public class Methods {
             alertDialog.setNegativeButton(context.getString(R.string.exit), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    ((Activity)context).finish();
+                    ((Activity) context).finish();
                 }
             });
         }

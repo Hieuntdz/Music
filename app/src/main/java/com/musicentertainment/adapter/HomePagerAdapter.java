@@ -1,5 +1,6 @@
 package com.musicentertainment.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -30,7 +31,7 @@ public class HomePagerAdapter extends EnchantedViewPagerAdapter {
     private ArrayList<ItemHomeBanner> arrayList;
     private Methods methods;
 
-    public HomePagerAdapter(Context context, ArrayList<ItemHomeBanner> arrayList) {
+    public HomePagerAdapter(Activity context, ArrayList<ItemHomeBanner> arrayList) {
         super(arrayList);
         mContext = context;
         inflater = LayoutInflater.from(mContext);

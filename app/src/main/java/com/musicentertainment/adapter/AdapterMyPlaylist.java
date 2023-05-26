@@ -16,6 +16,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.nativead.MediaView;
+import com.google.android.gms.ads.nativead.NativeAdView;
 import com.musicentertainment.countrymusic.R;
 import com.musicentertainment.interfaces.ClickListenerPlayList;
 import com.musicentertainment.item.ItemArtist;
@@ -27,9 +29,7 @@ import com.facebook.ads.AdOptionsView;
 import com.facebook.ads.NativeAd;
 import com.facebook.ads.NativeAdLayout;
 import com.facebook.ads.NativeAdsManager;
-import com.google.android.gms.ads.formats.MediaView;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
-import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -54,11 +54,11 @@ public class AdapterMyPlaylist extends RecyclerView.Adapter {
     private Methods methods;
 
     private Boolean isAdLoaded = false;
-    private List<UnifiedNativeAd> mNativeAdsAdmob = new ArrayList<>();
+    private List<com.google.android.gms.ads.nativead.NativeAd> mNativeAdsAdmob = new ArrayList<>();
     private NativeAdsManager mNativeAdsManager;
     private ArrayList<NativeAd> mNativeAdsFB = new ArrayList<>();
 
-    public AdapterMyPlaylist(Context context, ArrayList<ItemMyPlayList> arrayList, ClickListenerPlayList clickListenerPlayList, Boolean isOnline) {
+    public AdapterMyPlaylist(Activity context, ArrayList<ItemMyPlayList> arrayList, ClickListenerPlayList clickListenerPlayList, Boolean isOnline) {
         this.arrayList = arrayList;
         this.filteredArrayList = arrayList;
         this.context = context;
@@ -178,7 +178,7 @@ public class AdapterMyPlaylist extends RecyclerView.Adapter {
 
 //                            CardView cardView = (CardView) ((Activity) context).getLayoutInflater().inflate(R.layout.layout_native_ad_admob, null);
 
-                            UnifiedNativeAdView adView = (UnifiedNativeAdView) ((Activity) context).getLayoutInflater().inflate(R.layout.layout_native_ad_admob, null);
+                            NativeAdView adView = (NativeAdView) ((Activity) context).getLayoutInflater().inflate(R.layout.layout_native_ad_admob, null);
                             populateUnifiedNativeAdView(mNativeAdsAdmob.get(i), adView);
                             ((ADViewHolder) holder).rl_native_ad.removeAllViews();
                             ((ADViewHolder) holder).rl_native_ad.addView(adView);
@@ -254,7 +254,7 @@ public class AdapterMyPlaylist extends RecyclerView.Adapter {
         }
     }
 
-    public void addAds(UnifiedNativeAd unifiedNativeAd) {
+    public void addAds(com.google.android.gms.ads.nativead.NativeAd unifiedNativeAd) {
         mNativeAdsAdmob.add(unifiedNativeAd);
         isAdLoaded = true;
         notifyDataSetChanged();
@@ -269,7 +269,7 @@ public class AdapterMyPlaylist extends RecyclerView.Adapter {
         return arrayListTemp.indexOf(arrayList.get(pos));
     }
 
-    private void populateUnifiedNativeAdView(UnifiedNativeAd nativeAd, UnifiedNativeAdView adView) {
+    private void populateUnifiedNativeAdView(com.google.android.gms.ads.nativead.NativeAd nativeAd, NativeAdView adView) {
         // Set the media view. Media content will be automatically populated in the media view once
         // adView.setNativeAd() is called.
         MediaView mediaView = adView.findViewById(R.id.ad_media);

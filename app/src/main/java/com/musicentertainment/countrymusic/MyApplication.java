@@ -1,5 +1,6 @@
 package com.musicentertainment.countrymusic;
 
+import android.app.Activity;
 import android.app.Application;
 import android.os.StrictMode;
 
@@ -44,7 +45,7 @@ public class MyApplication extends Application {
         OneSignal.initWithContext(this);
         OneSignal.setAppId("93307a8f-02c2-444f-996c-9b51f509fb74");
 
-        DBHelper dbHelper = new DBHelper(getApplicationContext());
+        DBHelper dbHelper = new DBHelper( getApplicationContext());
         dbHelper.onCreate(dbHelper.getWritableDatabase());
         dbHelper.getAbout();
 

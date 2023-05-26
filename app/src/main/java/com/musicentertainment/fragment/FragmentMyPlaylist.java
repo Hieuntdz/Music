@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.nativead.NativeAd;
 import com.musicentertainment.adapter.AdapterMyPlaylist;
 import com.musicentertainment.interfaces.ClickListenerPlayList;
 import com.musicentertainment.interfaces.InterAdListener;
@@ -160,22 +161,14 @@ public class FragmentMyPlaylist extends Fragment {
         if (Constant.isNativeAd) {
             if (Constant.natveAdType.equals("admob")) {
                 AdLoader.Builder builder = new AdLoader.Builder(getActivity(), Constant.ad_native_id);
-                AdLoader adLoader = builder.forUnifiedNativeAd(
-                        new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
+                AdLoader adLoader = builder.forNativeAd(
+                        new NativeAd.OnNativeAdLoadedListener() {
                             @Override
-                            public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
-                                // A native ad loaded successfully, check if the ad loader has finished loading
-                                // and if so, insert the ads into the list.
-
-                                adapterMyPlaylist.addAds(unifiedNativeAd);
-
+                            public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
+                                adapterMyPlaylist.addAds(nativeAd);
                             }
-                        }).withAdListener(
-                        new AdListener() {
-                            @Override
-                            public void onAdFailedToLoad(int errorCode) {
-                            }
-                        }).build();
+                        }
+                ).build();
 
                 // Load the Native Express ad.
                 adLoader.loadAds(new AdRequest.Builder().build(), 5);

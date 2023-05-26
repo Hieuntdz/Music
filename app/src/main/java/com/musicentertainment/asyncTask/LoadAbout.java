@@ -1,5 +1,6 @@
 package com.musicentertainment.asyncTask;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
 
@@ -18,7 +19,7 @@ public class LoadAbout extends AsyncTask<String, String, String> {
     private AboutListener aboutListener;
     private String message = "", verifyStatus = "0";
 
-    public LoadAbout(Context context, AboutListener aboutListener) {
+    public LoadAbout(Activity context, AboutListener aboutListener) {
         this.aboutListener = aboutListener;
         methods = new Methods(context);
     }

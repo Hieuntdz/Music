@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.nativead.NativeAd;
 import com.musicentertainment.adapter.AdapterArtist;
 import com.musicentertainment.asyncTask.LoadArtist;
 import com.musicentertainment.interfaces.ArtistListener;
@@ -30,10 +31,12 @@ import com.google.android.gms.ads.formats.UnifiedNativeAd;
 
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import fr.castorflex.android.circularprogressbar.CircularProgressBar;
 
 public class ArtistByGenreActivity extends BaseActivity {
@@ -85,7 +88,7 @@ public class ArtistByGenreActivity extends BaseActivity {
         frameLayout = findViewById(R.id.fl_empty);
 
         rv = findViewById(R.id.rv_cat);
-        glm_banner = new GridLayoutManager(this,3);
+        glm_banner = new GridLayoutManager(this, 3);
         glm_banner.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
@@ -100,7 +103,7 @@ public class ArtistByGenreActivity extends BaseActivity {
         rv.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                methods.showInterAd(position,"");
+                methods.showInterAd(position, "");
             }
         }));
 
@@ -108,7 +111,7 @@ public class ArtistByGenreActivity extends BaseActivity {
             @Override
             public void onLoadMore(int p, int totalItemsCount) {
                 if (!isOver) {
-                    if(!isLoading) {
+                    if (!isLoading) {
                         isLoading = true;
                         new Handler().postDelayed(new Runnable() {
                             @Override
@@ -167,33 +170,33 @@ public class ArtistByGenreActivity extends BaseActivity {
 
                 @Override
                 public void onEnd(String success, String verifyStatus, String message, ArrayList<ItemArtist> arrayListArtist, int total_records) {
-                        if (success.equals("1")) {
-                            if (!verifyStatus.equals("-1")) {
-                                if (arrayListArtist.size() == 0) {
-                                    isOver = true;
-                                    errr_msg = getString(R.string.err_no_artist_found);
-                                    try {
-                                        adapterArtist.hideHeader();
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                    setEmpty();
-                                } else {
-                                    addNewDataToArrayList(arrayListArtist, total_records);
-                                    page = page + 1;
-                                    setAdapter();
+                    if (success.equals("1")) {
+                        if (!verifyStatus.equals("-1")) {
+                            if (arrayListArtist.size() == 0) {
+                                isOver = true;
+                                errr_msg = getString(R.string.err_no_artist_found);
+                                try {
+                                    adapterArtist.hideHeader();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
+                                setEmpty();
                             } else {
-                                methods.getVerifyDialog(getString(R.string.error_unauth_access), message);
+                                addNewDataToArrayList(arrayListArtist, total_records);
+                                page = page + 1;
+                                setAdapter();
                             }
                         } else {
-                            errr_msg = getString(R.string.err_server);
-                            setEmpty();
+                            methods.getVerifyDialog(getString(R.string.error_unauth_access), message);
                         }
-                        progressBar.setVisibility(View.GONE);
-                        isLoading = false;
+                    } else {
+                        errr_msg = getString(R.string.err_server);
+                        setEmpty();
+                    }
+                    progressBar.setVisibility(View.GONE);
+                    isLoading = false;
                 }
-            }, methods.getAPIRequest(Constant.METHOD_ARTIST_BY_GENRES, page, "", "", "", "", itemGenres.getId(), "", "", "","","","","","","","", null));
+            }, methods.getAPIRequest(Constant.METHOD_ARTIST_BY_GENRES, page, "", "", "", "", itemGenres.getId(), "", "", "", "", "", "", "", "", "", "", null));
             loadArtist.execute(String.valueOf(page));
         } else {
             errr_msg = getString(R.string.err_internet_not_conn);
@@ -205,21 +208,15 @@ public class ArtistByGenreActivity extends BaseActivity {
         if (Constant.isNativeAd) {
             if (Constant.natveAdType.equals("admob")) {
                 AdLoader.Builder builder = new AdLoader.Builder(ArtistByGenreActivity.this, Constant.ad_native_id);
-                AdLoader adLoader = builder.forUnifiedNativeAd(
-                        new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
+
+                AdLoader adLoader = builder.forNativeAd(
+                        new NativeAd.OnNativeAdLoadedListener() {
                             @Override
-                            public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
-                                // A native ad loaded successfully, check if the ad loader has finished loading
-                                // and if so, insert the ads into the list.
-
-                                adapterArtist.addAds(unifiedNativeAd);
-
+                            public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
+                                adapterArtist.addAds(nativeAd);
                             }
                         }).withAdListener(
                         new AdListener() {
-                            @Override
-                            public void onAdFailedToLoad(int errorCode) {
-                            }
                         }).build();
 
                 // Load the Native Express ad.
@@ -269,7 +266,7 @@ public class ArtistByGenreActivity extends BaseActivity {
     }
 
     public void setEmpty() {
-        if(arrayList.size() > 0) {
+        if (arrayList.size() > 0) {
             rv.setVisibility(View.VISIBLE);
             frameLayout.setVisibility(View.GONE);
         } else {
@@ -280,11 +277,11 @@ public class ArtistByGenreActivity extends BaseActivity {
             LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             View myView = null;
-            if(errr_msg.equals(getString(R.string.err_no_artist_found))) {
+            if (errr_msg.equals(getString(R.string.err_no_artist_found))) {
                 myView = inflater.inflate(R.layout.layout_err_nodata, null);
-            } else if(errr_msg.equals(getString(R.string.err_internet_not_conn))) {
+            } else if (errr_msg.equals(getString(R.string.err_internet_not_conn))) {
                 myView = inflater.inflate(R.layout.layout_err_internet, null);
-            } else if(errr_msg.equals(getString(R.string.err_server))){
+            } else if (errr_msg.equals(getString(R.string.err_server))) {
                 myView = inflater.inflate(R.layout.layout_err_server, null);
             }
 
@@ -304,7 +301,7 @@ public class ArtistByGenreActivity extends BaseActivity {
 
     @Override
     public void onDestroy() {
-        if(adapterArtist != null) {
+        if (adapterArtist != null) {
             adapterArtist.destroyNativeAds();
         }
         super.onDestroy();

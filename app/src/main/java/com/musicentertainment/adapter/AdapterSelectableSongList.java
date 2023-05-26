@@ -1,5 +1,6 @@
 package com.musicentertainment.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -46,7 +47,7 @@ public class AdapterSelectableSongList extends RecyclerView.Adapter<AdapterSelec
         }
     }
 
-    public AdapterSelectableSongList(Context context, ArrayList<ItemSong> arrayList, ClickListenerPlayList recyclerClickListener) {
+    public AdapterSelectableSongList(Activity context, ArrayList<ItemSong> arrayList, ClickListenerPlayList recyclerClickListener) {
         this.arrayList = arrayList;
         this.recyclerClickListener = recyclerClickListener;
         methods = new Methods(context);

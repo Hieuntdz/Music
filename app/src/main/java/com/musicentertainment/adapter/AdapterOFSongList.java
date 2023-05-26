@@ -1,5 +1,6 @@
 package com.musicentertainment.adapter;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -75,7 +76,7 @@ public class AdapterOFSongList extends RecyclerView.Adapter<AdapterOFSongList.My
         }
     }
 
-    public AdapterOFSongList(Context context, ArrayList<ItemSong> arrayList, ClickListenerPlayList recyclerClickListener, String type) {
+    public AdapterOFSongList(Activity context, ArrayList<ItemSong> arrayList, ClickListenerPlayList recyclerClickListener, String type) {
         this.arrayList = arrayList;
         this.filteredArrayList = arrayList;
         this.context = context;

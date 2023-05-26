@@ -1,5 +1,6 @@
 package com.musicentertainment.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 

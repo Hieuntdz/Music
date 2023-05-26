@@ -4,12 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+
+import androidx.annotation.NonNull;
 import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
+
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +26,7 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.google.android.gms.ads.nativead.NativeAd;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.musicentertainment.adapter.AdapterAllSongList;
 import com.musicentertainment.asyncTask.LoadSong;
@@ -191,20 +195,20 @@ public class SongByCatActivity extends BaseActivity {
 
             RequestBody requestBody = null;
             if (type.equals(getString(R.string.categories))) {
-                addedFrom = "cat"+name;
-                requestBody = methods.getAPIRequest(Constant.METHOD_SONG_BY_CAT, page, "", "", "", "", id,"","","","","","","","",Constant.itemUser.getId(),"", null);
+                addedFrom = "cat" + name;
+                requestBody = methods.getAPIRequest(Constant.METHOD_SONG_BY_CAT, page, "", "", "", "", id, "", "", "", "", "", "", "", "", Constant.itemUser.getId(), "", null);
             } else if (type.equals(getString(R.string.countries))) {
-                addedFrom = "country"+name;
-                requestBody = methods.getAPIRequest(Constant.METHOD_SONG_BY_COUNTRY, page, "", "", "", "", id, "","","","","","","","",Constant.itemUser.getId(),"", null);
-            }  else if (type.equals(getString(R.string.albums))) {
-                addedFrom = "albums"+name;
-                requestBody = methods.getAPIRequest(Constant.METHOD_SONG_BY_ALBUMS, page, "", "", "", "", "", id,"","","","","","","",Constant.itemUser.getId(),"", null);
+                addedFrom = "country" + name;
+                requestBody = methods.getAPIRequest(Constant.METHOD_SONG_BY_COUNTRY, page, "", "", "", "", id, "", "", "", "", "", "", "", "", Constant.itemUser.getId(), "", null);
+            } else if (type.equals(getString(R.string.albums))) {
+                addedFrom = "albums" + name;
+                requestBody = methods.getAPIRequest(Constant.METHOD_SONG_BY_ALBUMS, page, "", "", "", "", "", id, "", "", "", "", "", "", "", Constant.itemUser.getId(), "", null);
             } else if (type.equals(getString(R.string.artist))) {
-                addedFrom = "artist"+name;
-                requestBody = methods.getAPIRequest(Constant.METHOD_SONG_BY_ARTIST, page, "", "", "", "", "", "", name.replace(" ","%20"),"","","","","","",Constant.itemUser.getId(),"", null);
+                addedFrom = "artist" + name;
+                requestBody = methods.getAPIRequest(Constant.METHOD_SONG_BY_ARTIST, page, "", "", "", "", "", "", name.replace(" ", "%20"), "", "", "", "", "", "", Constant.itemUser.getId(), "", null);
             } else if (type.equals(getString(R.string.playlist))) {
-                addedFrom = "serverplay"+name;
-                requestBody = methods.getAPIRequest(Constant.METHOD_SONG_BY_PLAYLIST, page, "", "", "", "", "", "", "", id,"","","","","",Constant.itemUser.getId(),"", null);
+                addedFrom = "serverplay" + name;
+                requestBody = methods.getAPIRequest(Constant.METHOD_SONG_BY_PLAYLIST, page, "", "", "", "", "", "", "", id, "", "", "", "", "", Constant.itemUser.getId(), "", null);
             }
 
             LoadSong loadSong = new LoadSong(new SongListener() {
@@ -232,7 +236,7 @@ public class SongByCatActivity extends BaseActivity {
                                 errr_msg = getString(R.string.err_no_songs_found);
                                 setEmpty();
                             } else {
-                                if(Constant.addedFrom.equals(addedFrom) ) {
+                                if (Constant.addedFrom.equals(addedFrom)) {
                                     if (isNewAdded) {
                                         for (int i = 0; i < arrayListCatBySong.size(); i++) {
                                             if (!methods.isContains(arrayListCatBySong.get(i).getId())) {
@@ -255,14 +259,14 @@ public class SongByCatActivity extends BaseActivity {
 //                                        Constant.arrayList_play.clear();
 //                                                Constant.arrayList_play.addAll(arrayListLatest);
 
-                                            if(!isAllNew) {
+                                            if (!isAllNew) {
                                                 for (int i = 0; i < arrayListCatBySong.size(); i++) {
                                                     if (!methods.isContains(arrayListCatBySong.get(i).getId())) {
                                                         Constant.arrayList_play.add(arrayListCatBySong.get(i));
                                                         isAllNew = true;
                                                     }
                                                 }
-                                            }  else {
+                                            } else {
                                                 Constant.arrayList_play.addAll(arrayListCatBySong);
                                             }
 
@@ -302,27 +306,18 @@ public class SongByCatActivity extends BaseActivity {
     }
 
 
-
     private void loadNativeAds() {
         if (Constant.isNativeAd) {
             if (Constant.natveAdType.equals("admob")) {
                 AdLoader.Builder builder = new AdLoader.Builder(SongByCatActivity.this, Constant.ad_native_id);
-                AdLoader adLoader = builder.forUnifiedNativeAd(
-                        new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
+                AdLoader adLoader = builder.forNativeAd(
+                        new NativeAd.OnNativeAdLoadedListener() {
                             @Override
-                            public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
-                                // A native ad loaded successfully, check if the ad loader has finished loading
-                                // and if so, insert the ads into the list.
-
-                                adapter.addAds(unifiedNativeAd);
-
+                            public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
+                                adapter.addAds(nativeAd);
                             }
-                        }).withAdListener(
-                        new AdListener() {
-                            @Override
-                            public void onAdFailedToLoad(int errorCode) {
-                            }
-                        }).build();
+                        }
+                ).build();
 
                 // Load the Native Express ad.
                 adLoader.loadAds(new AdRequest.Builder().build(), 5);
@@ -366,7 +361,7 @@ public class SongByCatActivity extends BaseActivity {
                     int real_pos = adapter.getRealPos(position, arrayListTemp);
 
                     Constant.isOnline = true;
-                    if(!Constant.addedFrom.equals(addedFrom)) {
+                    if (!Constant.addedFrom.equals(addedFrom)) {
                         Constant.arrayList_play.clear();
                         Constant.arrayList_play.addAll(arrayListTemp);
                         Constant.addedFrom = addedFrom;

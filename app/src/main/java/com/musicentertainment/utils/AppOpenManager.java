@@ -40,25 +40,16 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks {
 
         loadCallback =
                 new AppOpenAd.AppOpenAdLoadCallback() {
-                    /**
-                     * Called when an app open ad has loaded.
-                     *
-                     * @param ad the loaded app open ad.
-                     */
                     @Override
-                    public void onAppOpenAdLoaded(AppOpenAd ad) {
+                    public void onAdLoaded(AppOpenAd ad) {
+                        // Called when an app open ad has loaded.
                         AppOpenManager.this.appOpenAd = ad;
                         AppOpenManager.this.loadTime = (new Date()).getTime();
                     }
 
-                    /**
-                     * Called when an app open ad has failed to load.
-                     *
-                     * @param loadAdError the error.
-                     */
                     @Override
-                    public void onAppOpenAdFailedToLoad(LoadAdError loadAdError) {
-                        // Handle the error.
+                    public void onAdFailedToLoad(LoadAdError loadAdError) {
+
                     }
 
                 };
@@ -94,8 +85,8 @@ public class AppOpenManager implements Application.ActivityLifecycleCallbacks {
                         }
                     };
 
-//            appOpenAd.setFullScreenContentCallback(fullScreenContentCallback);
-            appOpenAd.show(currentActivity, fullScreenContentCallback);
+            appOpenAd.setFullScreenContentCallback(fullScreenContentCallback);
+            appOpenAd.show(currentActivity);
 
         } else {
             Log.d(LOG_TAG, "Can not show ad.");

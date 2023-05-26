@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.nativead.NativeAd;
 import com.musicentertainment.adapter.AdapterApps;
 import com.musicentertainment.asyncTask.LoadApps;
 import com.musicentertainment.countrymusic.R;
@@ -185,22 +186,14 @@ public class FragmentApps extends Fragment {
         if (Constant.isNativeAd) {
             if (Constant.natveAdType.equals("admob")) {
                 AdLoader.Builder builder = new AdLoader.Builder(getActivity(), Constant.ad_native_id);
-                AdLoader adLoader = builder.forUnifiedNativeAd(
-                        new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
+                AdLoader adLoader = builder.forNativeAd(
+                        new NativeAd.OnNativeAdLoadedListener() {
                             @Override
-                            public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
-                                // A native ad loaded successfully, check if the ad loader has finished loading
-                                // and if so, insert the ads into the list.
-
-                                adapterApps.addAds(unifiedNativeAd);
-
+                            public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
+                                adapterApps.addAds(nativeAd);
                             }
-                        }).withAdListener(
-                        new AdListener() {
-                            @Override
-                            public void onAdFailedToLoad(int errorCode) {
-                            }
-                        }).build();
+                        }
+                ).build();
 
                 // Load the Native Express ad.
                 adLoader.loadAds(new AdRequest.Builder().build(), 5);

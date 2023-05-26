@@ -1,5 +1,6 @@
 package com.musicentertainment.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -54,7 +55,7 @@ public class Encrypter {
                 new SystemNativeCryptoLibrary());
         _entity = new Entity(saltString);
         isInited = true;
-        dbHelper = new DBHelper(context);
+        dbHelper = new DBHelper( context);
     }
 
     public String GetEditedFileName(File file, String token) {

@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.nativead.NativeAd;
 import com.musicentertainment.adapter.AdapterServerPlaylist;
 import com.musicentertainment.asyncTask.LoadServerPlaylist;
 import com.musicentertainment.interfaces.InterAdListener;
@@ -198,22 +199,14 @@ public class FragmentServerPlaylist extends Fragment {
     private void loadNativeAds() {
         if (Constant.isNativeAd) {
             AdLoader.Builder builder = new AdLoader.Builder(getActivity(), Constant.ad_native_id);
-            AdLoader adLoader = builder.forUnifiedNativeAd(
-                    new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
+            AdLoader adLoader = builder.forNativeAd(
+                    new NativeAd.OnNativeAdLoadedListener() {
                         @Override
-                        public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
-                            // A native ad loaded successfully, check if the ad loader has finished loading
-                            // and if so, insert the ads into the list.
-
-                            adapter.addAds(unifiedNativeAd);
-
+                        public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
+                            adapter.addAds(nativeAd);
                         }
-                    }).withAdListener(
-                    new AdListener() {
-                        @Override
-                        public void onAdFailedToLoad(int errorCode) {
-                        }
-                    }).build();
+                    }
+            ).build();
 
             // Load the Native Express ad.
             adLoader.loadAds(new AdRequest.Builder().build(), 5);

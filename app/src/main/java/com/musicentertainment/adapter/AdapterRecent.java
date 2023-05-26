@@ -1,5 +1,6 @@
 package com.musicentertainment.adapter;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -47,7 +48,7 @@ public class AdapterRecent extends RecyclerView.Adapter<AdapterRecent.MyViewHold
         }
     }
 
-    public AdapterRecent(Context context, ArrayList<ItemSong> arrayList, ClickListenerPlayList clickListenerPlayList) {
+    public AdapterRecent(Activity context, ArrayList<ItemSong> arrayList, ClickListenerPlayList clickListenerPlayList) {
         this.context = context;
         this.arrayList = arrayList;
         this.clickListenerPlayList = clickListenerPlayList;

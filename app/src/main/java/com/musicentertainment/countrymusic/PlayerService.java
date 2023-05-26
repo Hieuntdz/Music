@@ -1,5 +1,6 @@
 package com.musicentertainment.countrymusic;
 
+import android.app.Activity;
 import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -126,8 +127,8 @@ public class PlayerService extends IntentService implements Player.EventListener
     @Override
     public void onCreate() {
 
-        methods = new Methods(getApplicationContext());
-        dbHelper = new DBHelper(getApplicationContext());
+        methods = new Methods( getApplicationContext());
+        dbHelper = new DBHelper( getApplicationContext());
 
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         mAudioManager.requestAudioFocus(onAudioFocusChangeListener, AudioManager.STREAM_MUSIC,

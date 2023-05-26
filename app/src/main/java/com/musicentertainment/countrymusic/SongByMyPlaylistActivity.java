@@ -10,7 +10,10 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.google.android.gms.ads.nativead.NativeAd;
 import com.google.android.material.appbar.AppBarLayout;
+
+import androidx.annotation.NonNull;
 import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -195,22 +198,14 @@ public class SongByMyPlaylistActivity extends BaseActivity {
         if (Constant.isNativeAd) {
             if (Constant.natveAdType.equals("admob")) {
                 AdLoader.Builder builder = new AdLoader.Builder(SongByMyPlaylistActivity.this, Constant.ad_native_id);
-                AdLoader adLoader = builder.forUnifiedNativeAd(
-                        new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
+                AdLoader adLoader = builder.forNativeAd(
+                        new NativeAd.OnNativeAdLoadedListener() {
                             @Override
-                            public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
-                                // A native ad loaded successfully, check if the ad loader has finished loading
-                                // and if so, insert the ads into the list.
-
-                                adapter.addAds(unifiedNativeAd);
-
+                            public void onNativeAdLoaded(@NonNull NativeAd nativeAd) {
+                                adapter.addAds(nativeAd);
                             }
-                        }).withAdListener(
-                        new AdListener() {
-                            @Override
-                            public void onAdFailedToLoad(int errorCode) {
-                            }
-                        }).build();
+                        }
+                ).build();
 
                 // Load the Native Express ad.
                 adLoader.loadAds(new AdRequest.Builder().build(), 5);
@@ -253,7 +248,7 @@ public class SongByMyPlaylistActivity extends BaseActivity {
                 int real_pos = adapter.getRealPos(position, arrayListTemp);
 
                 Constant.isOnline = true;
-                if(!Constant.addedFrom.equals(addedFrom)) {
+                if (!Constant.addedFrom.equals(addedFrom)) {
                     Constant.arrayList_play.clear();
                     Constant.arrayList_play.addAll(arrayListTemp);
                     Constant.addedFrom = addedFrom;
