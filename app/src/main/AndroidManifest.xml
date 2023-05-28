@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.musicentertainment.countrymusic">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -27,7 +28,7 @@
 
         <meta-data
             android:name="com.onesignal.NotificationServiceExtension"
-            android:value="com.company.NotificationServiceExtension" />
+            android:value="com.musicentertainment.utils.NotificationExtenderExample" />
 
         <activity
             android:name="com.musicentertainment.countrymusic.SplashActivity"
